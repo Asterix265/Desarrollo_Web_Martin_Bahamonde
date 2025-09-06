@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adopciones — Portada</title>
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <meta name="description" content="Portada del sistema de adopción con ultimos avisos publicados.">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">Sistema de Adopción de Mascotas</h1>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="agregar.html">Agregar aviso de adopción</a>
+        <a href="listado.html">Ver listado de adopciones</a>
+        <a href="estadisticas.html">Estadísticas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="welcome-section" aria-labelledby="welcome-title">
+      <h2 id="welcome-title">¡Bienvenido al Sistema de Adopción de Mascotas!</h2>
+      <p>Conectamos familias amorosas con mascotas que buscan un hogar. Aquí puedes encontrar perros y gatos en adopción, o publicar un aviso si tienes una mascota que necesita una nueva familia.</p>
+    </section>
+
+    <section>
+      <h2>Últimos 5 avisos de adopción</h2>
+
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Fecha publicación</th>
+              <th scope="col">Comuna</th>
+              <th scope="col">Sector</th>
+              <th scope="col">Cantidad Tipo edad</th>
+              <th scope="col">Foto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr> 
+              <td><time datetime="2025-08-18T12:00">2025-08-18 12:00</time></td>
+              <td>Santiago</td>
+              <td>Beauchef 850, terraza</td>
+              <td>1 gato 2 meses</td>
+              <td><img src="../img/gato1.jpg" alt="Gato en adopción" class="thumb"></td>
+            </tr> 
+            <tr> 
+              <td><time datetime="2025-08-17T19:00">2025-08-17 19:00</time></td>
+              <td>Ñuñoa</td>
+              <td>Plaza Ñuñoa</td>
+              <td>3 perros 2 meses</td>
+              <td><img src="../img/perro1.jpg" alt="Perros en adopción" class="thumb"></td>
+            </tr>
+            <tr>
+              <td><time datetime="2025-08-17T18:00">2025-08-17 18:00</time></td>
+              <td>Santiago</td>
+              <td>Parque O'Higgins</td>
+              <td>2 gatos 1 mes</td>
+              <td><img src="../img/gato2.jpg" alt="Gatos en adopción" class="thumb"></td>
+            </tr>
+            <tr>
+              <td><time datetime="2025-08-16T15:00">2025-08-16 15:00</time></td>
+              <td>La Florida</td>
+              <td>Av. Vicuña Mackenna</td>
+              <td>1 perro 1 año</td>
+              <td><img src="../img/perro2.jpg" alt="Perro en adopción" class="thumb"></td>
+            </tr>
+            <tr>
+              <td><time datetime="2025-08-15T11:00">2025-08-15 11:00</time></td>
+              <td>Providencia</td>
+              <td>Costanera Center</td>
+              <td>1 gato 3 años</td>
+              <td><img src="../img/gato3.jpg" alt="Gato en adopción" class="thumb"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

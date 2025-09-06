@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 260" role="img" aria-labelledby="title desc">
+  <title id="title">Gráfico de barras: avisos por mes diferenciando perros y gatos</title>
+  <desc id="desc">Se muestran 6 meses en el eje X y la cantidad de avisos en el eje Y con dos barras por mes (gatos y perros).</desc>
+  <rect x="0" y="0" width="460" height="260" fill="#ffffff"/>
+  <rect x="50" y="30" width="380" height="180" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1" rx="8"/>
+  <line x1="50" y1="210" x2="430" y2="210" stroke="#adb5bd" stroke-width="2"/>
+  <line x1="50" y1="30"  x2="50"  y2="210" stroke="#adb5bd" stroke-width="2"/>
+  <g font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif" font-size="10" fill="#6c757d">
+    <line x1="50" y1="210" x2="430" y2="210" stroke="#dee2e6" />
+    <text x="40" y="213" text-anchor="end">0</text>
+    <line x1="50" y1="186" x2="430" y2="186" stroke="#dee2e6" />
+    <text x="40" y="189" text-anchor="end">2</text>
+    <line x1="50" y1="162" x2="430" y2="162" stroke="#dee2e6" />
+    <text x="40" y="165" text-anchor="end">4</text>
+    <line x1="50" y1="138" x2="430" y2="138" stroke="#dee2e6" />
+    <text x="40" y="141" text-anchor="end">6</text>
+    <line x1="50" y1="114" x2="430" y2="114" stroke="#dee2e6" />
+    <text x="40" y="117" text-anchor="end">8</text>
+    <line x1="50" y1="90" x2="430" y2="90" stroke="#dee2e6" />
+    <text x="40" y="93" text-anchor="end">10</text>
+  </g>
+  <rect x="70" y="174" width="12" height="36" fill="#667eea" rx="2"/>
+  <rect x="86" y="186" width="12" height="24" fill="#764ba2" rx="2"/>
+  <text x="82" y="225" text-anchor="middle" font-size="10" fill="#495057" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif">Ago</text>
+  <rect x="120" y="186" width="12" height="24" fill="#667eea" rx="2"/>
+  <rect x="136" y="174" width="12" height="36" fill="#764ba2" rx="2"/>
+  <text x="132" y="225" text-anchor="middle" font-size="10" fill="#495057" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif">Sep</text>
+  <rect x="170" y="162" width="12" height="48" fill="#667eea" rx="2"/>
+  <rect x="186" y="198" width="12" height="12" fill="#764ba2" rx="2"/>
+  <text x="182" y="225" text-anchor="middle" font-size="10" fill="#495057" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif">Oct</text>
+  <rect x="220" y="174" width="12" height="36" fill="#667eea" rx="2"/>
+  <rect x="236" y="186" width="12" height="24" fill="#764ba2" rx="2"/>
+  <text x="232" y="225" text-anchor="middle" font-size="10" fill="#495057" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif">Nov</text>
+  <rect x="270" y="150" width="12" height="60" fill="#667eea" rx="2"/>
+  <rect x="286" y="186" width="12" height="24" fill="#764ba2" rx="2"/>
+  <text x="282" y="225" text-anchor="middle" font-size="10" fill="#495057" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif">Dic</text>
+  <rect x="320" y="150" width="12" height="60" fill="#667eea" rx="2"/>
+  <rect x="336" y="174" width="12" height="36" fill="#764ba2" rx="2"/>
+  <text x="332" y="225" text-anchor="middle" font-size="10" fill="#495057" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif">Ene</text>
+  <g font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif" font-size="12" fill="#495057">
+    <rect x="60" y="12" width="12" height="12" fill="#667eea" rx="2"/><text x="78" y="22">Gatos</text>
+    <rect x="130" y="12" width="12" height="12" fill="#764ba2" rx="2"/><text x="148" y="22">Perros</text>
+  </g>
+  <text x="240" y="20" text-anchor="middle" font-size="14" font-weight="600" font-family="system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif" fill="#495057">Avisos por mes (últimos 6 meses)</text>
+</svg>

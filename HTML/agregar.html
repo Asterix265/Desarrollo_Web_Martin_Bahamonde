@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agregar aviso de adopción</title>
+  <meta name="description" content="Formulario para crear un aviso de adopción de mascotas.">
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <script defer src="../JS/region_comuna.js"></script>
+  <script defer src="../JS/script.js"></script>
+</head>
+
+<body> 
+  <header class="site-header">
+    <div class="container"> 
+      <h1 class="site-title">Agregar aviso de adopción</h1>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="index.html">Portada</a>
+        <a href="listado.html">Listado</a>
+        <a href="estadisticas.html">Estadísticas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <form id="form-aviso" novalidate>
+      <fieldset class="card">
+
+        <legend>¿Dónde?</legend>
+        
+        <div class="field">
+          <label for="region">Región <span class="hint">(obligatorio)</span></label>
+          <select id="region" name="region">
+            <option value="">Seleccione una región…</option>
+          </select>
+          <p class="error" data-error-for="region"></p> 
+        </div>
+        
+        <div class="field">
+          <label for="comuna">Comuna <span class="hint">(obligatorio)</span></label>
+          <select id="comuna" name="comuna" disabled>
+            <option value="">Seleccione una comuna…</option>
+          </select>
+          <p class="error" data-error-for="comuna"></p>
+        </div>
+
+        <div class="field">
+          <label for="sector">Sector <span class="hint">(opcional, máx. 100)</span></label>
+          <input id="sector" name="sector" type="text" maxlength="100" placeholder="Ej: Beauchef 850">
+          <p class="error" data-error-for="sector"></p>
+        </div>
+      </fieldset>
+      <fieldset class="card">
+
+
+        <legend>¿Contacto de esta publicación?</legend>
+
+        <div class="field">
+          <label for="nombre">Nombre <span class="hint">(obligatorio, 3–200)</span></label>
+          <input id="nombre" name="nombre" type="text" placeholder="Nombre y apellido">
+          <p class="error" data-error-for="nombre"></p>
+        </div>
+
+        <div class="field">
+          <label for="email">Email <span class="hint">(obligatorio, formato válido, máx. 100)</span></label>
+          <input id="email" name="email" type="email" maxlength="100" placeholder="nombre@dominio.com">
+          <p class="error" data-error-for="email"></p>
+        </div>
+
+        <div class="field">
+          <label for="celular">Número de celular <span class="hint">(opcional, formato +NNN.NNNNNNNN)</span></label>
+          <input id="celular" name="celular" type="tel" placeholder="+569.12345678">
+          <p class="error" data-error-for="celular"></p>
+        </div>
+
+        <div class="field">
+          <fieldset>
+            <legend>Contactar por <span class="hint">(opcional, máx. 5)</span></legend>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="contactarPor" value="whatsapp"> WhatsApp</label>
+              <label><input type="checkbox" name="contactarPor" value="telegram"> Telegram</label>
+              <label><input type="checkbox" name="contactarPor" value="x"> X</label>
+              <label><input type="checkbox" name="contactarPor" value="instagram"> Instagram</label>
+              <label><input type="checkbox" name="contactarPor" value="tiktok"> TikTok</label>
+              <label><input type="checkbox" name="contactarPor" value="otra"> Otra</label>
+            </div>
+            <div id="contacto-ids" class="stack-sm"></div>
+            <small class="hint"> Máximo 5 opciones.</small>
+            <p class="error" data-error-for="contactarPor"></p>
+          </fieldset>
+        </div>
+      </fieldset>
+
+      <fieldset class="card">
+        <legend>¿Qué mascota ofrece en adopción?</legend>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="tipo">Tipo <span class="hint">(obligatorio)</span></label>
+            <select id="tipo" name="tipo">
+              <option value="">Seleccione…</option>
+              <option value="gato">Gato</option>
+              <option value="perro">Perro</option>
+            </select>
+            <p class="error" data-error-for="tipo"></p>
+          </div>
+
+          <div class="field">
+            <label for="cantidad">Cantidad <span class="hint">(obligatorio, entero ≥ 1)</span></label>
+            <input id="cantidad" name="cantidad" type="number" min="1" step="1" placeholder="1">
+            <p class="error" data-error-for="cantidad"></p>
+          </div>
+
+          <div class="field">
+            <label for="edad">Edad <span class="hint">(obligatorio, entero ≥ 1)</span></label>
+            <input id="edad" name="edad" type="number" min="1" step="1" placeholder="2">
+            <p class="error" data-error-for="edad"></p>
+          </div>
+
+          <div class="field">
+            <label for="unidad-edad">Unidad medida edad <span class="hint">(obligatorio)</span></label>
+            <select id="unidad-edad" name="unidadEdad">
+              <option value="">Seleccione…</option>
+              <option value="meses">meses</option>
+              <option value="años">años</option>
+            </select>
+            <p class="error" data-error-for="unidadEdad"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="fecha-entrega">Fecha disponible para entrega
+            <span class="hint">(obligatorio; prellenada ahora+3h; no menor a ese valor)</span>
+          </label>
+          <input id="fecha-entrega" name="fechaEntrega" type="datetime-local">
+          <p class="error" data-error-for="fechaEntrega"></p>
+        </div>
+
+        <div class="field">
+          <label for="descripcion">Descripción <span class="hint">(opcional)</span></label>
+          <textarea id="descripcion" name="descripcion" cols="50" rows="10" placeholder="Detalles relevantes (carácter, salud, etc.)"></textarea>
+          <p class="error" data-error-for="descripcion"></p>
+        </div>
+
+        <div class="field">
+          <label>Fotos <span class="hint">(obligatorio, 1–5)</span></label>
+          <div id="fotos-wrapper" class="stack-sm">
+            <input type="file" name="fotos" accept="image/*">
+          </div>
+          <button type="button" id="btn-agregar-foto" class="btn-secondary">Agregar otra foto</button>
+          <p class="error" data-error-for="fotos"></p>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="button" id="btn-enviar" class="btn-primary">Agregar este aviso de adopción</button>
+        <a href="index.html" class="btn-ghost">Cancelar y volver</a>
+      </div>
+
+      <dialog id="modal-confirmacion">
+        <h3 id="modal-titulo">¿Está seguro que desea agregar este aviso de adopción?</h3>
+        <div class="modal-actions">
+          <button type="button" id="confirmar-si" class="btn-primary">Sí, estoy seguro</button>
+          <button type="button" id="confirmar-no" class="btn-ghost">No, no estoy seguro, quiero volver al formulario</button>
+        </div>
+      </dialog>
+
+      <section id="exito" hidden class="card success">
+        <p>Hemos recibido la información de adopción, ¡muchas gracias y suerte!</p>
+        <a href="index.html" class="btn-primary">Volver a la portada</a>
+      </section>
+    </form>
+  </main>
+
+</body>
+</html>

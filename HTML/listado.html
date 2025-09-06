@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Listado de avisos de adopción</title>
+  <meta name="description" content="Listado completo de avisos de adopción de mascotas disponibles.">
+  <link rel="stylesheet" href="../CSS/styles.css">
+  <script defer src="../JS/listado.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">Listado de Avisos de Adopción</h1>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a href="index.html">Portada</a>
+        <a href="agregar.html">Agregar aviso</a>
+        <a href="estadisticas.html">Estadísticas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Todos los avisos de adopción disponibles</h2>
+      
+      <div class="table-wrapper">
+        <table class="table" id="tabla-avisos">
+          <thead>
+            <tr>
+              <th scope="col">Fecha Publicación</th>
+              <th scope="col">Fecha Entrega</th>
+              <th scope="col">Comuna</th>
+              <th scope="col">Sector</th>
+              <th scope="col">Cantidad tipo edad</th>
+              <th scope="col">Nombre Contacto</th>
+              <th scope="col">total fotos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-aviso="1">
+              <td><time datetime="2025-01-18T12:00">2025-01-18 12:00</time></td>
+              <td><time datetime="2025-01-20T15:00">2025-01-20 15:00</time></td>
+              <td>Santiago</td>
+              <td>Beauchef 850, terraza</td>
+              <td>1 gato 2 meses</td>
+              <td>María González</td>
+              <td>3</td>
+            </tr>
+            <tr data-aviso="2">
+              <td><time datetime="2025-01-17T19:00">2025-01-17 19:00</time></td>
+              <td><time datetime="2025-01-19T10:00">2025-01-19 10:00</time></td>
+              <td>Ñuñoa</td>
+              <td>Plaza Ñuñoa</td>
+              <td>3 perros 2 meses</td>
+              <td>Carlos Rodríguez</td>
+              <td>5</td>
+            </tr>
+            <tr data-aviso="3">
+              <td><time datetime="2025-01-17T18:00">2025-01-17 18:00</time></td>
+              <td><time datetime="2025-01-21T14:00">2025-01-21 14:00</time></td>
+              <td>Santiago</td>
+              <td>Parque O'Higgins</td>
+              <td>2 gatos 1 mes</td>
+              <td>Ana Silva</td>
+              <td>4</td>
+            </tr>
+            <tr data-aviso="4">
+              <td><time datetime="2025-01-16T15:00">2025-01-16 15:00</time></td>
+              <td><time datetime="2025-01-18T11:00">2025-01-18 11:00</time></td>
+              <td>La Florida</td>
+              <td>Av. Vicuña Mackenna</td>
+              <td>1 perro 1 año</td>
+              <td>Pedro Martínez</td>
+              <td>2</td>
+            </tr>
+            <tr data-aviso="5">
+              <td><time datetime="2025-01-15T11:00">2025-01-15 11:00</time></td>
+              <td><time datetime="2025-01-17T16:00">2025-01-17 16:00</time></td>
+              <td>Providencia</td>
+              <td>Costanera Center</td>
+              <td>1 gato 3 años</td>
+              <td>Laura Fernández</td>
+              <td>3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <dialog id="modal-detalles">
+      <div class="modal-content">
+        <h3>Detalles del aviso de adopción</h3>
+        
+        <div class="detalles-grid">
+          <div class="detalle-section">
+            <h4>Información de la mascota</h4>
+            <p><strong>Tipo:</strong> <span id="det-tipo"></span></p>
+            <p><strong>Cantidad:</strong> <span id="det-cantidad"></span></p>
+            <p><strong>Edad:</strong> <span id="det-edad"></span></p>
+            <p><strong>Descripción:</strong> <span id="det-descripcion"></span></p>
+          </div>
+          
+          <div class="detalle-section">
+            <h4>Ubicación</h4>
+            <p><strong>Región:</strong> <span id="det-region"></span></p>
+            <p><strong>Comuna:</strong> <span id="det-comuna"></span></p>
+            <p><strong>Sector:</strong> <span id="det-sector"></span></p>
+            <p><strong>Fecha de entrega:</strong> <span id="det-fecha-entrega"></span></p>
+          </div>
+          
+          <div class="detalle-section">
+            <h4>Contacto</h4>
+            <p><strong>Nombre:</strong> <span id="det-nombre"></span></p>
+            <p><strong>Email:</strong> <span id="det-email"></span></p>
+            <p><strong>Celular:</strong> <span id="det-celular"></span></p>
+            <div id="det-redes-sociales"></div>
+          </div>
+        </div>
+        
+        <div class="detalle-section">
+          <h4>Fotos</h4>
+          <div id="det-fotos" class="photo-gallery"></div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" id="cerrar-modal" class="btn-primary">Volver al listado</button>
+          <a href="index.html" class="btn-ghost">Volver a portada</a>
+        </div>
+      </div>
+    </dialog>
+
+    <div id="photo-modal" class="photo-modal" style="display: none;">
+      <span class="close-btn">&times;</span>
+      <img id="photo-modal-img" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIGhheSBpbWFnZW48L3RleHQ+PC9zdmc+" alt="Foto ampliada">
+    </div>
+  </main>
+
+</body>
+</html>
