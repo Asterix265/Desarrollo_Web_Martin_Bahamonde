@@ -152,6 +152,6 @@ http://localhost:5000
 - **Manejo de errores**: Try-catch en operaciones de BD
 - **Configuración**: Se usan valores por defecto considerando que estamos en desarrollo y es una tarea, para producción se deberían usar variables de entorno globalizadas.
 
-## 👥 Autor
+##  Autor
 
 **Martin Bahamonde** - Desarrollo Web Tarea 2
