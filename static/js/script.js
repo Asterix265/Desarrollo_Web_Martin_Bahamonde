@@ -1,4 +1,3 @@
-
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 const setError = (name, msg) => {
@@ -17,49 +16,40 @@ let minFechaEntregaISO = null;
 
 
 function poblarRegiones() {
-  const selRegion = $("#region");
-  const selComuna = $("#comuna");
-
-    if (typeof region_comuna === "undefined" || !Array.isArray(region_comuna.regiones)) {
-    console.error("region_comuna.js no cargó o la ruta es incorrecta.");
-    return;
-    }
-
-
-  selRegion.innerHTML = `<option value="">Seleccione una región…</option>`;
-  selComuna.innerHTML = `<option value="">Seleccione una comuna…</option>`;
-  selComuna.disabled = true;
-
-  region_comuna.regiones.forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = String(r.numero);
-    opt.textContent = r.nombre;
-    selRegion.appendChild(opt);
-  });
-
+  // COMENTADO: Las regiones ahora vienen del backend con Jinja2
   const actualizarComunas = () => {
+    const selRegion = $("#region");
+    const selComuna = $("#comuna_id");
+    
     selComuna.innerHTML = `<option value="">Seleccione una comuna…</option>`;
     selComuna.disabled = true;
 
     const valor = selRegion.value.trim();
     if (!valor) return;
 
-    const numero = Number(valor);
-    const reg = region_comuna.regiones.find(r => r.numero === numero);
-    if (!reg) return;
-
-    reg.comunas.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = String(c.id);
-      opt.textContent = c.nombre;
-      selComuna.appendChild(opt);
-    });
-    selComuna.disabled = false;
+    // Usar la API del backend para obtener comunas
+    fetch(`/api/comunas/${valor}`)
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(comuna => {
+          const opt = document.createElement("option");
+          opt.value = comuna.id;
+          opt.textContent = comuna.nombre;
+          selComuna.appendChild(opt);
+        });
+        selComuna.disabled = false;
+      })
+      .catch(error => {
+        console.error('Error al cargar comunas:', error);
+        setError("comuna", "Error al cargar comunas");
+      });
   };
 
-  selRegion.addEventListener("change", actualizarComunas);
-
-  if (selRegion.value) actualizarComunas();
+  const selRegion = $("#region");
+  if (selRegion) {
+    selRegion.addEventListener("change", actualizarComunas);
+    if (selRegion.value) actualizarComunas();
+  }
 }
 
 function setupContactarPor() {
@@ -136,7 +126,8 @@ function setupFotos() {
 }
 
 function setupFechaEntrega() {
-  const inp = $("#fecha-entrega");
+  const inp = $("#fecha_entrega");
+  if (!inp) return;
   const now = new Date();
   now.setMinutes(now.getMinutes() + 180);
   const pad = (n) => String(n).padStart(2, "0");
@@ -149,17 +140,17 @@ function validarFormulario() {
   clearAllErrors();
   let ok = true;
 
-  const region = $("#region").value.trim();
-  const comuna = $("#comuna").value.trim();
-  const sector = $("#sector").value.trim();
+  const region = $("#region")?.value?.trim() || "";
+  const comuna = $("#comuna_id")?.value?.trim() || "";
+  const sector = $("#sector")?.value?.trim() || "";
 
   if (!region) { setError("region", "Seleccione una región."); ok = false; }
   if (!comuna) { setError("comuna", "Seleccione una comuna."); ok = false; }
   if (sector && sector.length > 100) { setError("sector", "Máximo 100 caracteres."); ok = false; }
 
-  const nombre = $("#nombre").value.trim();
-  const email = $("#email").value.trim();
-  const celular = $("#celular").value.trim();
+  const nombre = $("#nombre")?.value?.trim() || "";
+  const email = $("#email")?.value?.trim() || "";
+  const celular = $("#celular")?.value?.trim() || "";
   const checkboxesContactar = $$('input[name="contactarPor"]');
   const seleccionadas = checkboxesContactar.filter(cb => cb.checked).map(cb => cb.value);
 
@@ -173,6 +164,10 @@ function validarFormulario() {
   }
   if (celular && !telRegex.test(celular)) {
     setError("celular", "Formato esperado: +NNN.NNNNNNNN");
+    ok = false;
+  }
+  if (seleccionadas.length === 0) {
+    setError("contactarPor", "Se requiere al menos un método de contacto.");
     ok = false;
   }
   if (seleccionadas.length > 5) {
@@ -191,25 +186,25 @@ function validarFormulario() {
     }
   }
 
-  const tipo = $("#tipo").value.trim();
-  const cantidad = $("#cantidad").value.trim();
-  const edad = $("#edad").value.trim();
-  const unidad = $("#unidad-edad").value.trim();
-  const fechaEntrega = $("#fecha-entrega").value.trim();
+  const tipo = $("#tipo")?.value?.trim() || "";
+  const cantidad = $("#cantidad")?.value?.trim() || "";
+  const edad = $("#edad")?.value?.trim() || "";
+  const unidad = $("#unidad_medida")?.value?.trim() || "";
+  const fechaEntrega = $("#fecha_entrega")?.value?.trim() || "";
 
   if (!tipo) { setError("tipo", "Seleccione el tipo (gato o perro)."); ok = false; }
 
   const esEnteroPos = (s) => /^\d+$/.test(s) && Number(s) >= 1;
   if (!esEnteroPos(cantidad)) { setError("cantidad", "Ingrese entero ≥ 1."); ok = false; }
   if (!esEnteroPos(edad)) { setError("edad", "Ingrese entero ≥ 1."); ok = false; }
-  if (!unidad) { setError("unidadEdad", "Seleccione meses o años."); ok = false; }
+  if (!unidad) { setError("unidad_medida", "Seleccione meses o años."); ok = false; }
 
   if (!fechaEntrega) {
-    setError("fechaEntrega", "Ingrese fecha y hora.");
+    setError("fecha_entrega", "Ingrese fecha y hora.");
     ok = false;
   } else {
     if (fechaEntrega < minFechaEntregaISO) {
-      setError("fechaEntrega", "Debe ser ≥ a la fecha/hora prellenada.");
+      setError("fecha_entrega", "Debe ser ≥ a la fecha/hora prellenada.");
       ok = false;
     }
   }
@@ -245,8 +240,7 @@ function setupEnvio() {
 
   si.addEventListener("click", () => {
     modal.close();
-    form.querySelectorAll("fieldset, .actions, .error").forEach(el => el.setAttribute("hidden", "hidden"));
-    exito.hidden = false;
+    form.submit();
   });
 }
 

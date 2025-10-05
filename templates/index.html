@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Adopciones — Portada</title>
-  <link rel="stylesheet" href="../CSS/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <meta name="description" content="Portada del sistema de adopción con ultimos avisos publicados.">
 </head>
 <body>
@@ -12,9 +12,9 @@
     <div class="container">
       <h1 class="site-title">Sistema de Adopción de Mascotas</h1>
       <nav class="site-nav" aria-label="Navegación principal">
-        <a href="agregar.html">Agregar aviso de adopción</a>
-        <a href="listado.html">Ver listado de adopciones</a>
-        <a href="estadisticas.html">Estadísticas</a>
+        <a href="{{ url_for('agregar_adopcion') }}">Agregar aviso de adopción</a>
+        <a href="{{ url_for('listado') }}">Ver listado de adopciones</a>
+        <a href="{{ url_for('estadisticas') }}">Estadísticas</a>
       </nav>
     </div>
   </header>
@@ -40,41 +40,31 @@
             </tr>
           </thead>
           <tbody>
-            <tr> 
-              <td><time datetime="2025-08-18T12:00">2025-08-18 12:00</time></td>
-              <td>Santiago</td>
-              <td>Beauchef 850, terraza</td>
-              <td>1 gato 2 meses</td>
-              <td><img src="../img/gato1.jpg" alt="Gato en adopción" class="thumb"></td>
-            </tr> 
-            <tr> 
-              <td><time datetime="2025-08-17T19:00">2025-08-17 19:00</time></td>
-              <td>Ñuñoa</td>
-              <td>Plaza Ñuñoa</td>
-              <td>3 perros 2 meses</td>
-              <td><img src="../img/perro1.jpg" alt="Perros en adopción" class="thumb"></td>
-            </tr>
-            <tr>
-              <td><time datetime="2025-08-17T18:00">2025-08-17 18:00</time></td>
-              <td>Santiago</td>
-              <td>Parque O'Higgins</td>
-              <td>2 gatos 1 mes</td>
-              <td><img src="../img/gato2.jpg" alt="Gatos en adopción" class="thumb"></td>
-            </tr>
-            <tr>
-              <td><time datetime="2025-08-16T15:00">2025-08-16 15:00</time></td>
-              <td>La Florida</td>
-              <td>Av. Vicuña Mackenna</td>
-              <td>1 perro 1 año</td>
-              <td><img src="../img/perro2.jpg" alt="Perro en adopción" class="thumb"></td>
-            </tr>
-            <tr>
-              <td><time datetime="2025-08-15T11:00">2025-08-15 11:00</time></td>
-              <td>Providencia</td>
-              <td>Costanera Center</td>
-              <td>1 gato 3 años</td>
-              <td><img src="../img/gato3.jpg" alt="Gato en adopción" class="thumb"></td>
-            </tr>
+            {% if avisos %}
+              {% for aviso in avisos %}
+                <tr onclick="window.location.href='{{ url_for('detalle', aviso_id=aviso.id) }}'" style="cursor: pointer;">
+                  <td><time datetime="{{ aviso.fecha_ingreso.isoformat() }}">{{ aviso.fecha_ingreso.strftime('%Y-%m-%d %H:%M') }}</time></td>
+                  <td>{{ aviso.comuna.nombre }}</td>
+                  <td>{{ aviso.sector if aviso.sector else 'No especificado' }}</td>
+                  <td>{{ aviso.cantidad }} {{ aviso.tipo }}{{ 's' if aviso.cantidad > 1 else '' }} {{ aviso.edad }} {{ 'año' if aviso.unidad_medida == 'a' else 'mes' }}{{ 's' if aviso.edad > 1 else '' }}</td>
+                  <td>
+                    {% if aviso.fotos %}
+                      <img src="{{ url_for('uploaded_file', filename=aviso.fotos[0].nombre_archivo) }}" 
+                           alt="{{ aviso.tipo }} en adopción" class="thumb">
+                    {% else %}
+                      <img src="{{ url_for('static', filename='img/' + aviso.tipo + '1.jpg') }}" 
+                           alt="{{ aviso.tipo }} en adopción" class="thumb">
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem;">
+                  <p>No hay avisos de adopción disponibles en este momento.</p>
+                </td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
       </div>

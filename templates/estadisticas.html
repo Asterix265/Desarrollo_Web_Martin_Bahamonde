@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Estadísticas de adopción</title>
   <meta name="description" content="Estadísticas y gráficos sobre los avisos de adopción de mascotas.">
-  <link rel="stylesheet" href="../CSS/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
@@ -13,9 +13,9 @@
     <div class="container">
       <h1 class="site-title">Estadísticas de Adopción</h1>
       <nav class="site-nav" aria-label="Navegación principal">
-        <a href="index.html">Portada</a>
-        <a href="agregar.html">Agregar aviso</a>
-        <a href="listado.html">Ver listado</a>
+        <a href="{{ url_for('index') }}">Portada</a>
+        <a href="{{ url_for('agregar_adopcion') }}">Agregar aviso</a>
+        <a href="{{ url_for('listado') }}">Ver listado</a>
       </nav>
     </div>
   </header>
@@ -29,27 +29,27 @@
       <div class="stat-card">
         <h3>Avisos por día</h3>
         <div class="stat-chart">
-          <img src="../img/grafico-linea.svg" alt="Gráfico de línea mostrando avisos por día" style="width: 100%; height: 100%; object-fit: contain;">
+          <img src="{{ url_for('static', filename='img/grafico-linea.svg') }}" alt="Gráfico de línea mostrando avisos por día" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
       </div>
 
       <div class="stat-card">
         <h3>Avisos por tipo (perro/gato)</h3>
         <div class="stat-chart">
-          <img src="../img/grafico-torta.svg" alt="Gráfico de torta mostrando distribución por tipo de mascota" style="width: 100%; height: 100%; object-fit: contain;">
+          <img src="{{ url_for('static', filename='img/grafico-torta.svg') }}" alt="Gráfico de torta mostrando distribución por tipo de mascota" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
       </div>
 
       <div class="stat-card">
         <h3>Avisos por mes, diferenciando perros y gatos</h3>
         <div class="stat-chart">
-          <img src="../img/grafico-barras.svg" alt="Gráfico de barras mostrando avisos por mes diferenciando perros y gatos" style="width: 100%; height: 100%; object-fit: contain;">
+          <img src="{{ url_for('static', filename='img/grafico-barras.svg') }}" alt="Gráfico de barras mostrando avisos por mes diferenciando perros y gatos" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
       </div>
     </div>
 
     <div class="actions">
-      <a href="index.html" class="btn-primary">Volver a la portada</a>
+      <a href="{{ url_for('index') }}" class="btn-primary">Volver a la portada</a>
     </div>
   </main>
 

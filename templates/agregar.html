@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agregar aviso de adopción</title>
   <meta name="description" content="Formulario para crear un aviso de adopción de mascotas.">
-  <link rel="stylesheet" href="../CSS/styles.css">
-  <script defer src="../JS/region_comuna.js"></script>
-  <script defer src="../JS/script.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script defer src="{{ url_for('static', filename='js/region_comuna.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 
 <body> 
@@ -15,15 +15,26 @@
     <div class="container"> 
       <h1 class="site-title">Agregar aviso de adopción</h1>
       <nav class="site-nav" aria-label="Navegación principal">
-        <a href="index.html">Portada</a>
-        <a href="listado.html">Listado</a>
-        <a href="estadisticas.html">Estadísticas</a>
+        <a href="{{ url_for('index') }}">Portada</a>
+        <a href="{{ url_for('listado') }}">Listado</a>
+        <a href="{{ url_for('estadisticas') }}">Estadísticas</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <form id="form-aviso" novalidate>
+    {% if errores %}
+      <div class="card error">
+        <h3>Por favor corrige los siguientes errores:</h3>
+        <ul>
+          {% for campo, mensaje in errores.items() %}
+            <li><strong>{{ campo }}:</strong> {{ mensaje }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    
+    <form id="form-aviso" method="POST" action="{{ url_for('agregar_adopcion') }}" enctype="multipart/form-data" novalidate>
       <fieldset class="card">
 
         <legend>¿Dónde?</legend>
@@ -32,21 +43,27 @@
           <label for="region">Región <span class="hint">(obligatorio)</span></label>
           <select id="region" name="region">
             <option value="">Seleccione una región…</option>
+            {% for region in regiones %}
+              <option value="{{ region.id }}">{{ region.nombre }}</option>
+            {% endfor %}
           </select>
           <p class="error" data-error-for="region"></p> 
         </div>
         
         <div class="field">
-          <label for="comuna">Comuna <span class="hint">(obligatorio)</span></label>
-          <select id="comuna" name="comuna" disabled>
+          <label for="comuna_id">Comuna <span class="hint">(obligatorio)</span></label>
+          <select id="comuna_id" name="comuna_id" disabled>
             <option value="">Seleccione una comuna…</option>
+            {% for comuna in comunas %}
+              <option value="{{ comuna.id }}" data-region="{{ comuna.region_id }}">{{ comuna.nombre }}</option>
+            {% endfor %}
           </select>
-          <p class="error" data-error-for="comuna"></p>
+          <p class="error" data-error-for="comuna_id"></p>
         </div>
 
         <div class="field">
           <label for="sector">Sector <span class="hint">(opcional, máx. 100)</span></label>
-          <input id="sector" name="sector" type="text" maxlength="100" placeholder="Ej: Beauchef 850">
+          <input id="sector" name="sector" type="text" maxlength="100" placeholder="Ej: Beauchef 850" value="{{ datos.sector if datos else '' }}">
           <p class="error" data-error-for="sector"></p>
         </div>
       </fieldset>
@@ -57,37 +74,33 @@
 
         <div class="field">
           <label for="nombre">Nombre <span class="hint">(obligatorio, 3–200)</span></label>
-          <input id="nombre" name="nombre" type="text" placeholder="Nombre y apellido">
+          <input id="nombre" name="nombre" type="text" placeholder="Nombre y apellido" value="{{ datos.nombre if datos else '' }}">
           <p class="error" data-error-for="nombre"></p>
         </div>
 
         <div class="field">
           <label for="email">Email <span class="hint">(obligatorio, formato válido, máx. 100)</span></label>
-          <input id="email" name="email" type="email" maxlength="100" placeholder="nombre@dominio.com">
+          <input id="email" name="email" type="email" maxlength="100" placeholder="nombre@dominio.com" value="{{ datos.email if datos else '' }}">
           <p class="error" data-error-for="email"></p>
         </div>
 
         <div class="field">
           <label for="celular">Número de celular <span class="hint">(opcional, formato +NNN.NNNNNNNN)</span></label>
-          <input id="celular" name="celular" type="tel" placeholder="+569.12345678">
+          <input id="celular" name="celular" type="tel" placeholder="+569.12345678" value="{{ datos.celular if datos else '' }}">
           <p class="error" data-error-for="celular"></p>
         </div>
 
         <div class="field">
-          <fieldset>
-            <legend>Contactar por <span class="hint">(opcional, máx. 5)</span></legend>
-            <div class="checkbox-group">
-              <label><input type="checkbox" name="contactarPor" value="whatsapp"> WhatsApp</label>
-              <label><input type="checkbox" name="contactarPor" value="telegram"> Telegram</label>
-              <label><input type="checkbox" name="contactarPor" value="x"> X</label>
-              <label><input type="checkbox" name="contactarPor" value="instagram"> Instagram</label>
-              <label><input type="checkbox" name="contactarPor" value="tiktok"> TikTok</label>
-              <label><input type="checkbox" name="contactarPor" value="otra"> Otra</label>
-            </div>
-            <div id="contacto-ids" class="stack-sm"></div>
-            <small class="hint"> Máximo 5 opciones.</small>
-            <p class="error" data-error-for="contactarPor"></p>
-          </fieldset>
+          <label>¿Cómo te pueden contactar?</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="contactarPor" value="whatsapp"> WhatsApp</label>
+            <label><input type="checkbox" name="contactarPor" value="telegram"> Telegram</label>
+            <label><input type="checkbox" name="contactarPor" value="twitter"> Twitter</label>
+            <label><input type="checkbox" name="contactarPor" value="instagram"> Instagram</label>
+            <label><input type="checkbox" name="contactarPor" value="facebook"> Facebook</label>
+          </div>
+          <div id="contacto-ids"></div>
+          <p class="error" data-error-for="contactarPor"></p>
         </div>
       </fieldset>
 
@@ -118,34 +131,34 @@
           </div>
 
           <div class="field">
-            <label for="unidad-edad">Unidad medida edad <span class="hint">(obligatorio)</span></label>
-            <select id="unidad-edad" name="unidadEdad">
+            <label for="unidad_medida">Unidad medida edad <span class="hint">(obligatorio)</span></label>
+            <select id="unidad_medida" name="unidad_medida">
               <option value="">Seleccione…</option>
-              <option value="meses">meses</option>
-              <option value="años">años</option>
+              <option value="m" {{ 'selected' if datos and datos.unidad_medida == 'm' else '' }}>meses</option>
+              <option value="a" {{ 'selected' if datos and datos.unidad_medida == 'a' else '' }}>años</option>
             </select>
-            <p class="error" data-error-for="unidadEdad"></p>
+            <p class="error" data-error-for="unidad_medida"></p>
           </div>
         </div>
 
         <div class="field">
-          <label for="fecha-entrega">Fecha disponible para entrega
+          <label for="fecha_entrega">Fecha disponible para entrega
             <span class="hint">(obligatorio; prellenada ahora+3h; no menor a ese valor)</span>
           </label>
-          <input id="fecha-entrega" name="fechaEntrega" type="datetime-local">
-          <p class="error" data-error-for="fechaEntrega"></p>
+          <input id="fecha_entrega" name="fecha_entrega" type="datetime-local" value="{{ datos.fecha_entrega if datos else '' }}">
+          <p class="error" data-error-for="fecha_entrega"></p>
         </div>
 
         <div class="field">
           <label for="descripcion">Descripción <span class="hint">(opcional)</span></label>
-          <textarea id="descripcion" name="descripcion" cols="50" rows="10" placeholder="Detalles relevantes (carácter, salud, etc.)"></textarea>
+          <textarea id="descripcion" name="descripcion" cols="50" rows="10" placeholder="Detalles relevantes (carácter, salud, etc.)">{{ datos.descripcion if datos else '' }}</textarea>
           <p class="error" data-error-for="descripcion"></p>
         </div>
 
         <div class="field">
           <label>Fotos <span class="hint">(obligatorio, 1–5)</span></label>
           <div id="fotos-wrapper" class="stack-sm">
-            <input type="file" name="fotos" accept="image/*">
+            <input type="file" name="fotos" accept="image/*" multiple>
           </div>
           <button type="button" id="btn-agregar-foto" class="btn-secondary">Agregar otra foto</button>
           <p class="error" data-error-for="fotos"></p>
@@ -154,7 +167,7 @@
 
       <div class="actions">
         <button type="button" id="btn-enviar" class="btn-primary">Agregar este aviso de adopción</button>
-        <a href="index.html" class="btn-ghost">Cancelar y volver</a>
+        <a href="{{ url_for('index') }}" class="btn-ghost">Cancelar y volver</a>
       </div>
 
       <dialog id="modal-confirmacion">
@@ -165,12 +178,13 @@
         </div>
       </dialog>
 
-      <section id="exito" hidden class="card success">
+      <div id="exito" hidden class="card success">
         <p>Hemos recibido la información de adopción, ¡muchas gracias y suerte!</p>
-        <a href="index.html" class="btn-primary">Volver a la portada</a>
-      </section>
+        <a href="{{ url_for('index') }}" class="btn-primary">Volver a la portada</a>
+      </div>
     </form>
   </main>
+
 
 </body>
 </html>
