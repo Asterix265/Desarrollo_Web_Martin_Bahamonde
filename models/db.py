@@ -8,11 +8,9 @@ engine = create_engine(DATABASE_URI, echo=False, pool_pre_ping=True)
 Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 def get_session():
-    """Retorna una nueva sesión de base de datos"""
     return SessionLocal()
 
 
-# Modelos
 
 class Region(Base):
     __tablename__ = 'region'
@@ -61,6 +59,7 @@ class AvisoAdopcion(Base):
     comuna = relationship('Comuna', back_populates='avisos')
     fotos = relationship('Foto', back_populates='aviso', cascade='all, delete-orphan')
     contactos = relationship('ContactarPor', back_populates='aviso', cascade='all, delete-orphan')
+    comentarios = relationship('Comentario', back_populates='aviso', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f"<AvisoAdopcion(id={self.id}, tipo='{self.tipo}', cantidad={self.cantidad})>"
@@ -94,15 +93,26 @@ class ContactarPor(Base):
         return f"<ContactarPor(id={self.id}, nombre='{self.nombre}', identificador='{self.identificador}')>"
 
 
-# Función para inicializar la base de datos (crear tablas si no existen)
+class Comentario(Base):
+    __tablename__ = 'comentario'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime, nullable=False)
+    aviso_id = Column(Integer, ForeignKey('aviso_adopcion.id'), nullable=False)
+    
+    aviso = relationship('AvisoAdopcion', back_populates='comentarios')
+    
+    def __repr__(self):
+        return f"<Comentario(id={self.id}, nombre='{self.nombre}', aviso_id={self.aviso_id})>"
+
+
 def init_db():
-    """Crea todas las tablas en la base de datos"""
     Base.metadata.create_all(engine)
 
 
-# Función para cerrar la sesión
 def close_session(session):
-    """Cierra una sesión de base de datos"""
     if session:
         session.close()
 

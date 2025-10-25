@@ -4,8 +4,8 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 
 from config import SECRET_KEY, UPLOAD_FOLDER, ALLOWED_EXTENSIONS, MAX_FILE_SIZE
-from models.db import get_session, AvisoAdopcion, Region, Comuna, Foto, ContactarPor
-from utils.validations import validar_formulario_completo
+from models.db import get_session, AvisoAdopcion, Region, Comuna, Foto, ContactarPor, Comentario
+from utils.validations import validar_formulario_completo, validar_comentario_completo
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -15,18 +15,15 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def allowed_file(filename):
-    """Verificar si el archivo tiene una extensión permitida"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def save_uploaded_files(files, aviso_id):
-    """Guardar archivos subidos y crear registros en BD"""
     fotos_guardadas = []
     
     for file in files:
         if file and file.filename and allowed_file(file.filename):
-            # Generar nombre único para el archivo
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = secure_filename(file.filename)
             name, ext = os.path.splitext(filename)
@@ -168,7 +165,6 @@ def agregar_adopcion():
 
 @app.route('/listado')
 def listado():
-    """Listado paginado de avisos"""
     session = get_session()
     
     try:
@@ -202,7 +198,6 @@ def listado():
 
 @app.route('/detalle/<int:aviso_id>')
 def detalle(aviso_id):
-    """Detalle de un aviso específico"""
     session = get_session()
     
     try:
@@ -230,7 +225,6 @@ def estadisticas():
 
 @app.route('/api/comunas/<int:region_id>')
 def api_comunas(region_id):
-    """API para obtener comunas de una región"""
     session = get_session()
     
     try:
@@ -250,6 +244,162 @@ def api_comunas(region_id):
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@app.route('/api/estadisticas/avisos-por-dia')
+def api_avisos_por_dia():
+    session = get_session()
+    try:
+        avisos = session.query(
+            AvisoAdopcion.fecha_ingreso
+        ).all()
+        
+        avisos_por_dia = {}
+        for aviso in avisos:
+            fecha = aviso.fecha_ingreso.strftime('%Y-%m-%d')
+            avisos_por_dia[fecha] = avisos_por_dia.get(fecha, 0) + 1
+        
+        dias = sorted(avisos_por_dia.keys())
+        cantidades = [avisos_por_dia[dia] for dia in dias]
+        
+        return jsonify({
+            'dias': dias,
+            'cantidades': cantidades
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@app.route('/api/estadisticas/avisos-por-tipo')
+def api_avisos_por_tipo():
+    session = get_session()
+    try:
+        perros = session.query(AvisoAdopcion)\
+            .filter(AvisoAdopcion.tipo == 'perro')\
+            .count()
+        
+        gatos = session.query(AvisoAdopcion)\
+            .filter(AvisoAdopcion.tipo == 'gato')\
+            .count()
+        
+        return jsonify({
+            'perros': perros,
+            'gatos': gatos
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@app.route('/api/estadisticas/avisos-por-mes')
+def api_avisos_por_mes():
+    session = get_session()
+    try:
+        avisos = session.query(
+            AvisoAdopcion.fecha_ingreso,
+            AvisoAdopcion.tipo
+        ).all()
+        
+        avisos_por_mes = {}
+        for aviso in avisos:
+            mes = aviso.fecha_ingreso.strftime('%Y-%m')
+            if mes not in avisos_por_mes:
+                avisos_por_mes[mes] = {'perros': 0, 'gatos': 0}
+            
+            if aviso.tipo == 'perro':
+                avisos_por_mes[mes]['perros'] += 1
+            else:
+                avisos_por_mes[mes]['gatos'] += 1
+        
+        meses = sorted(avisos_por_mes.keys())
+        perros = [avisos_por_mes[mes]['perros'] for mes in meses]
+        gatos = [avisos_por_mes[mes]['gatos'] for mes in meses]
+        
+        meses_nombres = []
+        for mes in meses:
+            fecha = datetime.strptime(mes, '%Y-%m')
+            mes_nombre = fecha.strftime('%B %Y')
+            meses_nombres.append(mes_nombre)
+        
+        return jsonify({
+            'meses': meses_nombres,
+            'perros': perros,
+            'gatos': gatos
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@app.route('/api/comentarios/<int:aviso_id>', methods=['GET'])
+def api_obtener_comentarios(aviso_id):
+    session = get_session()
+    try:
+        comentarios = session.query(Comentario)\
+            .filter(Comentario.aviso_id == aviso_id)\
+            .order_by(Comentario.fecha.desc())\
+            .all()
+        
+        comentarios_data = []
+        for comentario in comentarios:
+            comentarios_data.append({
+                'id': comentario.id,
+                'nombre': comentario.nombre,
+                'texto': comentario.texto,
+                'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S')
+            })
+        
+        return jsonify(comentarios_data)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+@app.route('/api/comentarios', methods=['POST'])
+def api_agregar_comentario():
+    session = get_session()
+    try:
+        datos = request.get_json()
+        
+        es_valido, errores = validar_comentario_completo(datos)
+        
+        if not es_valido:
+            return jsonify({'success': False, 'errores': errores}), 400
+        
+        comentario = Comentario(
+            nombre=datos['nombre'].strip(),
+            texto=datos['texto'].strip(),
+            fecha=datetime.now(),
+            aviso_id=int(datos['aviso_id'])
+        )
+        
+        session.add(comentario)
+        session.commit()
+        
+        return jsonify({
+            'success': True,
+            'comentario': {
+                'id': comentario.id,
+                'nombre': comentario.nombre,
+                'texto': comentario.texto,
+                'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S')
+            }
+        })
+    
+    except Exception as e:
+        session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        session.close()
 
 
 if __name__ == '__main__':

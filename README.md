@@ -1,14 +1,15 @@
-# Tarea 2: Sistema de Adopción de Mascotas con Flask
+# Tarea 2 y 3: Sistema de Adopción de Mascotas con Flask
 
-Una aplicación web completa para gestión de adopción de perros y gatos, desarrollada con Flask, SQLAlchemy y MySQL. Incluye validaciones del lado del servidor y cliente.
+Una aplicación web completa para gestión de adopción de perros y gatos, desarrollada con Flask, SQLAlchemy y MySQL. Incluye validaciones del lado del servidor y cliente, estadísticas dinámicas con gráficos interactivos y sistema de comentarios.
 
 ## Características
 
 - **Formulario de adopción** con validaciones JavaScript y del servidor
 - **Listado paginado** de avisos de adopción
 - **Vista detallada** con galería de fotos y modal
-- **API REST** para obtener comunas por región
-- **Portal de estadísticas** con gráficos estaticos, usado como maqueta, sin ninguna funcionalidad hasta el momento.
+- **Sistema de comentarios** en tiempo real con AJAX
+- **Estadísticas dinámicas** con graficos de highcharts
+- **API REST** para comunas, estadísticas y comentarios
 - **Gestión de archivos** con validación de imágenes
 - **Base de datos MySQL** con relaciones complejas
 
@@ -17,6 +18,8 @@ Una aplicación web completa para gestión de adopción de perros y gatos, desar
 - **Backend**: Flask 3.0.0
 - **Base de datos**: MySQL con SQLAlchemy 2.0.23
 - **Frontend**: HTML5, CSS3, JavaScript
+- **Gráficos**: Highcharts
+- **AJAX**: Fetch API para comunicación asíncrona
 - **Validaciones**: JavaScript (cliente) + Python (servidor)
 - **Templates**: Jinja2
 
@@ -55,9 +58,10 @@ pip install -r requirements.txt
 # Conectar a MySQL
 mysql -u root -p
 
-# Ejecutar scripts SQL
+# Ejecutar scripts SQL 
 SOURCE database/tarea2.sql;
 SOURCE database/region-comuna.sql;
+SOURCE database/tabla-comentario.sql;
 ```
 
 ### 5. Configurar variables de entorno
@@ -91,38 +95,76 @@ http://localhost:5000
 
 ## Funcionalidades
 
-### 1. Agregar Aviso de Adopción
-- Formulario completo con validaciones
-- Subida de múltiples imágenes
-- Validaciones JavaScript y del servidor
-- Modal de confirmación
+##### TAREA 2 #######
+### 1. Agregar Aviso de Adopción 
+- Formulario completo con validaciones duales (cliente + servidor)
+- Subida de múltiples imágenes (1-5 fotos, formatos: PNG, JPG, JPEG, WEBP)
+- Selección dinámica de región y comuna
+- Múltiples métodos de contacto (hasta 5)
+- Modal de confirmación antes de enviar
+- Mensaje de éxito tras agregar
+- Almacenamiento seguro de archivos
 
-### 2. Listado de Avisos
-- Paginación
-- Información resumida de cada aviso
+### 2. Listado de Avisos 
+- Paginación (5 avisos por página)
+- Información resumida: tipo, cantidad, edad, región, comuna
+- Foto principal de cada aviso
 - Enlaces a vista detallada
+- Navegación entre páginas
 
 ### 3. Detalle de Aviso
 - Información completa del aviso
-- Galería de fotos con modal
-- Datos de contacto
-- Información de la mascota
+- Galería de fotos con modal para ampliar
+- Datos de contacto (email, celular, redes sociales)
+- Información de la mascota (tipo, edad, descripción)
+- Ubicación (región, comuna, sector)
+- Sistema de comentarios interactivo 
 
+
+###### TAREA 3 ######
+
+### 4. Sistema de Comentarios 
+- Formulario para agregar comentarios (nombre 3-80 caracteres, texto 5-300 caracteres)
+- Envío asíncrono con AJAX (Fetch API)
+- Validaciones en cliente y servidor
+- Lista de comentarios ordenados por fecha (más recientes primero)
+- Actualización automática sin recargar página
+- Manejo de errores con mensajes informativos
+
+### 5. Estadísticas Dinámicas
+- **Gráfico de líneas**: Cantidad de avisos por día
+- **Gráfico de torta**: Distribución de avisos por tipo (perros vs gatos)
+- **Gráfico de barras agrupadas**: Avisos por mes diferenciando perros y gatos
+- Datos obtenidos en tiempo real desde la base de datos vía API REST
+- Gráficos interactivos con Highcharts 
+- Responsive y con colores diferenciados por tipo
+
+
+### Separación de Responsabilidades
+- **app.py**: Rutas Flask, manejo de requests/responses, integración de componentes
+- **models/db.py**: Definición de modelos y acceso a BD (framework-agnostic)
+- **utils/validations.py**: Lógica de validación pura (reutilizable)
+- **config.py**: Configuración centralizada
+- **templates/**: Presentación (Jinja2)
+- **static/**: Assets del cliente
 
 ## Seguridad
 
-- **Validaciones del servidor**: Prevención de inyección SQL y XSS
-- **SQLAlchemy ORM**: Escapado automático de consultas
-- **Validación de archivos**: Extensiones y tamaños permitidos
+### Prevención de Ataques
+- **SQL Injection**: SQLAlchemy conqueries parametrizadas
+- **XSS**: Jinja2 escapa automáticamente variables en templates
+- **CSRF**: Flask con SECRET_KEY
+- **File Upload**: Validación de extensiones, tamaños y nombres seguros
 
 ## Validaciones
 
-### Cliente (JavaScript)
-- Formato de email
+#### Cliente (JavaScript - UX)
+- Formato de email (regex)
 - Formato de celular (+NNN.NNNNNNNN)
 - Fechas válidas
 - Archivos de imagen
 - Campos obligatorios
+- Feedback inmediato al usuario
 
 ### Servidor (Python)
 - Validación robusta de todos los campos
@@ -138,6 +180,7 @@ http://localhost:5000
 - `aviso_adopcion`: Avisos de adopción
 - `contactar_por`: Métodos de contacto
 - `foto`: Imágenes de avisos
+- `comentario`: Comentarios de avisos (Tarea 3)
 
 ### Relaciones
 - Una región tiene muchas comunas
@@ -151,7 +194,8 @@ http://localhost:5000
 - **Validaciones duales**: Cliente para UX, servidor para seguridad
 - **Manejo de errores**: Try-catch en operaciones de BD
 - **Configuración**: Se usan valores por defecto considerando que estamos en desarrollo y es una tarea, para producción se deberían usar variables de entorno globalizadas.
+- **Highcharts**: Se utiliza bajo licencia gratuita para uso educativo/personal (https://www.highcharts.com/products/highcharts/#non-commercial). Puesto es para una tarea universitaia.
 
 ##  Autor
 
-**Martin Bahamonde** - Desarrollo Web Tarea 2
+**Martin Bahamonde** - Desarrollo Web Tareas 2 y 3

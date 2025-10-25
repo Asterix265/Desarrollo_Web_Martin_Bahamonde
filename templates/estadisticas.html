@@ -6,6 +6,7 @@
   <title>Estadísticas de adopción</title>
   <meta name="description" content="Estadísticas y gráficos sobre los avisos de adopción de mascotas.">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
 </head>
 
 <body>
@@ -28,23 +29,17 @@
     <div class="stats-grid">
       <div class="stat-card">
         <h3>Avisos por día</h3>
-        <div class="stat-chart">
-          <img src="{{ url_for('static', filename='img/grafico-linea.svg') }}" alt="Gráfico de línea mostrando avisos por día" style="width: 100%; height: 100%; object-fit: contain;">
-        </div>
+        <div id="grafico-lineas" class="stat-chart"></div>
       </div>
 
       <div class="stat-card">
         <h3>Avisos por tipo (perro/gato)</h3>
-        <div class="stat-chart">
-          <img src="{{ url_for('static', filename='img/grafico-torta.svg') }}" alt="Gráfico de torta mostrando distribución por tipo de mascota" style="width: 100%; height: 100%; object-fit: contain;">
-        </div>
+        <div id="grafico-torta" class="stat-chart"></div>
       </div>
 
       <div class="stat-card">
         <h3>Avisos por mes, diferenciando perros y gatos</h3>
-        <div class="stat-chart">
-          <img src="{{ url_for('static', filename='img/grafico-barras.svg') }}" alt="Gráfico de barras mostrando avisos por mes diferenciando perros y gatos" style="width: 100%; height: 100%; object-fit: contain;">
-        </div>
+        <div id="grafico-barras" class="stat-chart"></div>
       </div>
     </div>
 
@@ -52,6 +47,125 @@
       <a href="{{ url_for('index') }}" class="btn-primary">Volver a la portada</a>
     </div>
   </main>
+
+  <script>
+    function generarGraficoLineas(data) {
+      Highcharts.chart('grafico-lineas', {
+        chart: {
+          type: 'line'
+        },
+        title: {
+          text: ''
+        },
+        xAxis: {
+          categories: data.dias,
+          title: {
+            text: 'Fecha'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Cantidad de avisos'
+          }
+        },
+        series: [{
+          name: 'Avisos',
+          data: data.cantidades,
+          color: '#4CAF50'
+        }],
+        credits: {
+          enabled: false
+        }
+      });
+    }
+
+    function generarGraficoTorta(data) {
+      Highcharts.chart('grafico-torta', {
+        chart: {
+          type: 'pie'
+        },
+        title: {
+          text: ''
+        },
+        series: [{
+          name: 'Cantidad',
+          data: [
+            {
+              name: 'Perros',
+              y: data.perros,
+              color: '#FF9800'
+            },
+            {
+              name: 'Gatos',
+              y: data.gatos,
+              color: '#2196F3'
+            }
+          ]
+        }],
+        credits: {
+          enabled: false
+        }
+      });
+    }
+
+    function generarGraficoBarras(data) {
+      Highcharts.chart('grafico-barras', {
+        chart: {
+          type: 'column'
+        },
+        title: {
+          text: ''
+        },
+        xAxis: {
+          categories: data.meses,
+          title: {
+            text: 'Mes'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Cantidad de avisos'
+          }
+        },
+        series: [{
+          name: 'Perros',
+          data: data.perros,
+          color: '#FF9800'
+        }, {
+          name: 'Gatos',
+          data: data.gatos,
+          color: '#2196F3'
+        }],
+        credits: {
+          enabled: false
+        }
+      });
+    }
+
+    fetch('/api/estadisticas/avisos-por-dia')
+      .then(response => response.json())
+      .then(data => generarGraficoLineas(data))
+      .catch(error => {
+        console.error('Error al cargar gráfico de líneas:', error);
+        document.getElementById('grafico-lineas').innerHTML = '<p class="error">Error al cargar el gráfico</p>';
+      });
+
+    fetch('/api/estadisticas/avisos-por-tipo')
+      .then(response => response.json())
+      .then(data => generarGraficoTorta(data))
+      .catch(error => {
+        console.error('Error al cargar gráfico de torta:', error);
+        document.getElementById('grafico-torta').innerHTML = '<p class="error">Error al cargar el gráfico</p>';
+      });
+
+    fetch('/api/estadisticas/avisos-por-mes')
+      .then(response => response.json())
+      .then(data => generarGraficoBarras(data))
+      .catch(error => {
+        console.error('Error al cargar gráfico de barras:', error);
+        document.getElementById('grafico-barras').innerHTML = '<p class="error">Error al cargar el gráfico</p>';
+      });
+  </script>
 
 </body>
 </html>

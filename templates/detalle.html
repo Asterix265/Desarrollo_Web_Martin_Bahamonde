@@ -92,12 +92,41 @@
         <a href="{{ url_for('index') }}" class="btn-ghost">Volver a portada</a>
       </div>
     </section>
+
+    <section class="card">
+      <h2>Comentarios</h2>
+      
+      <div class="comentarios-section">
+        <h3>Agregar comentario</h3>
+        <form id="form-comentario" class="form-comentario">
+          <div class="field">
+            <label for="comentario-nombre">Nombre (3-80 caracteres)</label>
+            <input type="text" id="comentario-nombre" name="nombre" minlength="3" maxlength="80" required>
+            <p class="error" id="error-nombre"></p>
+          </div>
+          
+          <div class="field">
+            <label for="comentario-texto">Comentario (mínimo 5 caracteres)</label>
+            <textarea id="comentario-texto" name="texto" rows="4" cols="50" minlength="5" maxlength="300" required></textarea>
+            <p class="error" id="error-texto"></p>
+          </div>
+          
+          <button type="submit" class="btn-primary">Agregar comentario</button>
+          <p class="error" id="error-general"></p>
+        </form>
+        
+        <h3>Comentarios de este aviso</h3>
+        <div id="lista-comentarios">
+          <p>Cargando comentarios...</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Modal para fotos ampliadas -->
   <div id="photo-modal" class="photo-modal" style="display: none;">
     <span class="close-btn" onclick="closePhotoModal()">&times;</span>
-    <img id="photo-modal-img" src="" alt="Foto ampliada">
+    <img id="photo-modal-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Foto ampliada">
   </div>
 
   <script>
@@ -120,6 +149,104 @@
         modal.style.display = 'none';
       }
     }
+
+    const avisoId = {{ aviso.id }};
+
+    function cargarComentarios() {
+      fetch(`/api/comentarios/${avisoId}`)
+        .then(response => response.json())
+        .then(comentarios => {
+          const lista = document.getElementById('lista-comentarios');
+          
+          if (comentarios.length === 0) {
+            lista.innerHTML = '<p>No hay comentarios aún. ¡Sé el primero en comentar!</p>';
+            return;
+          }
+          
+          let html = '<div class="comentarios-lista">';
+          comentarios.forEach(comentario => {
+            html += `
+              <div class="comentario-item">
+                <div class="comentario-header">
+                  <strong>${comentario.nombre}</strong>
+                  <span class="comentario-fecha">${comentario.fecha}</span>
+                </div>
+                <p class="comentario-texto">${comentario.texto}</p>
+              </div>
+            `;
+          });
+          html += '</div>';
+          
+          lista.innerHTML = html;
+        })
+        .catch(error => {
+          console.error('Error al cargar comentarios:', error);
+          document.getElementById('lista-comentarios').innerHTML = 
+            '<p class="error">Error al cargar los comentarios.</p>';
+        });
+    }
+
+    function limpiarErrores() {
+      document.getElementById('error-nombre').textContent = '';
+      document.getElementById('error-texto').textContent = '';
+      document.getElementById('error-general').textContent = '';
+    }
+
+    document.getElementById('form-comentario').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      limpiarErrores();
+      
+      const nombre = document.getElementById('comentario-nombre').value.trim();
+      const texto = document.getElementById('comentario-texto').value.trim();
+      
+      if (nombre.length < 3 || nombre.length > 80) {
+        document.getElementById('error-nombre').textContent = 'El nombre debe tener entre 3 y 80 caracteres';
+        return;
+      }
+      
+      if (texto.length < 5 || texto.length > 300) {
+        document.getElementById('error-texto').textContent = 'El comentario debe tener entre 5 y 300 caracteres';
+        return;
+      }
+      
+      fetch('/api/comentarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          nombre: nombre,
+          texto: texto,
+          aviso_id: avisoId
+        })
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          document.getElementById('comentario-nombre').value = '';
+          document.getElementById('comentario-texto').value = '';
+          cargarComentarios();
+        } else {
+          if (result.errores) {
+            if (result.errores.nombre) {
+              document.getElementById('error-nombre').textContent = result.errores.nombre;
+            }
+            if (result.errores.texto) {
+              document.getElementById('error-texto').textContent = result.errores.texto;
+            }
+          } else {
+            document.getElementById('error-general').textContent = 'Error al agregar el comentario';
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('error-general').textContent = 'Error al agregar el comentario';
+      });
+    });
+
+    cargarComentarios();
   </script>
 
 </body>

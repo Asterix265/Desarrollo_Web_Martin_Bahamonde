@@ -16,7 +16,7 @@ let minFechaEntregaISO = null;
 
 
 function poblarRegiones() {
-  // COMENTADO: Las regiones ahora vienen del backend con Jinja2
+  // Ahora regiones y comunas vienen del back 
   const actualizarComunas = () => {
     const selRegion = $("#region");
     const selComuna = $("#comuna_id");
@@ -27,7 +27,7 @@ function poblarRegiones() {
     const valor = selRegion.value.trim();
     if (!valor) return;
 
-    // Usar la API del backend para obtener comunas
+  
     fetch(`/api/comunas/${valor}`)
       .then(response => response.json())
       .then(data => {

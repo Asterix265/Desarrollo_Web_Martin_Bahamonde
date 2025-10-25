@@ -286,3 +286,56 @@ def validar_formulario_completo(datos, archivos):
                 errores[f'contacto_{i}'] = mensaje
     
     return len(errores) == 0, errores
+
+
+def validar_nombre_comentario(nombre):
+    if not nombre or not isinstance(nombre, str):
+        return False, "El nombre es requerido"
+    
+    nombre = nombre.strip()
+    
+    if len(nombre) < 3:
+        return False, "El nombre debe tener al menos 3 caracteres"
+    
+    if len(nombre) > 80:
+        return False, "El nombre no puede exceder 80 caracteres"
+    
+    return True, ""
+
+# Valida no vacío, minimo 3 max 80
+def validar_texto_comentario(texto):
+    if not texto or not isinstance(texto, str):
+        return False, "El texto del comentario es requerido"
+    
+    texto = texto.strip()
+    
+    if len(texto) < 5:
+        return False, "El comentario debe tener al menos 5 caracteres"
+    
+    if len(texto) > 300:
+        return False, "El comentario no puede exceder 300 caracteres"
+    
+    return True, ""
+
+# valida nombre del comentarista, texto e ID 
+def validar_comentario_completo(datos):
+    errores = {}
+    
+    es_valido, mensaje = validar_nombre_comentario(datos.get('nombre'))
+    if not es_valido:
+        errores['nombre'] = mensaje
+    
+    es_valido, mensaje = validar_texto_comentario(datos.get('texto'))
+    if not es_valido:
+        errores['texto'] = mensaje
+    
+    aviso_id = datos.get('aviso_id')
+    if not aviso_id:
+        errores['aviso_id'] = "El ID del aviso es requerido"
+    else:
+        try:
+            int(aviso_id)
+        except (ValueError, TypeError):
+            errores['aviso_id'] = "El ID del aviso debe ser un número"
+    
+    return len(errores) == 0, errores
